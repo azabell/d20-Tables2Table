@@ -2,7 +2,7 @@
 require_relative 'room_variables'
 require_relative 'master_table'
 require_relative 'dungeon_levels'
-require_relative 'dragon_types'
+require_relative 'dragons_undeads'
 
 ARGV.length < 1 ? fail("\n You need to specify the dungeon level") : level = ARGV[0].to_i
 ARGV.length > 2 ? fail("\n Only two input variables, please") : room_size = ARGV[1].to_i
@@ -36,6 +36,11 @@ if room_has.monster then
 	if monster[2] == "dragon" then
 		dragon = Dragon.new(d(100))
 		monster[0] = "#{dragon.age[dragon.type][level_term[0]-1]} #{dragon.type} dragon"
+	elsif monster[2] == "undead" then
+		undead = Undead.new(monster[0])
+		puts "ghost, #{undead.npc} NPC levels" if monster[0].include? "ghost [NPC level"
+		puts "vampire, #{undead.npc} NPC levels" if monster[0].include? "vampire [NPC level"
+		puts "lich (level #{undead.npc} #{undead.lich_class})" if monster[0].include? "lich [NPC level"
 	end
 	monster[2] == "friend" ? print("~FRIEND~ ") : print("~Monster~ ")
 	Array(monster[1]).each_index{ |a| 
@@ -55,14 +60,14 @@ end
 if room_has.feature then
 	print "You find: "
 	feature_type = d(100)
-	1.upto(d(4)) { |minor| room_has.feature_list << room_has.furnishMinor[d(100)-1] } if feature_type <= 60
-	1.upto(d(4)) { |major| room_has.feature_list << room_has.furnishMajor[d(100)-1] } if feature_type > 40
+	1.upto(d(4)) { |minor| room_has.feature_list << room_has.furnish_minor[d(100)-1] } if feature_type <= 60
+	1.upto(d(4)) { |major| room_has.feature_list << room_has.furnish_major[d(100)-1] } if feature_type > 40
 	room_has.feature_list.sort!.each {|n| print "#{n}"; print ", " if n != room_has.feature_list.last} 
 	print "\n\n"
 end
 if room_has.hidden_treasure then
-	print "Hidden by/in #{randToValue(room_has.treasureHidingIn,d(20))} and protected by\n"
-	print "#{randToValue(room_has.treasureGuardedBy,d(20))} is a treasure for\n"
+	print "Hidden by/in #{randToValue(room_has.treasure_hiding_in,d(20))} and protected by\n"
+	print "#{randToValue(room_has.treasure_guarded_by,d(20))} is a treasure for\n"
 	print " Level #{level} that will take a Search DC #{20+level+dieRoll("d10-5")} to find.\n\n"
 end
 if room_has.trap then
@@ -73,3 +78,7 @@ if room_has.trap then
 	print "Uncareful movement triggers a trap. Search DC #{20+level+dieRoll("d10-5")} to find.\n\n"
 end
 
+### Wandering Monsters
+i = 0
+i += 1 until d(100) > 90
+puts "Make another Wandering Monster check in #{60+60*i} feet, reset if there's combat"
