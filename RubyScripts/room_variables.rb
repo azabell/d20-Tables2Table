@@ -1,5 +1,5 @@
 class Room
-attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :die_to_roll, :feature_list, :debug, :contents, :furnishMinor, :furnishMajor, :treasureHidingIn, :treasureGuardedBy
+attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :die_to_roll, :feature_list, :debug, :contents, :furnish_minor, :furnish_major, :treasure_hiding_in, :treasure_guarded_by
 
 	def initialize 
 		@monster = false
@@ -11,7 +11,7 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 		@die_to_roll = Array.new
 		@feature_list = Array.new
 		@debug = false
-	end
+	end #initialize
 	def contents
 		# an amalgam of DMG3 table 4-10 and DMG2 table V.F.
 		@contents = Hash[
@@ -33,10 +33,10 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 			82 => ["trap"],
 			100 => ["empty"]
 		]
-	end
-	def furnishMinor
+	end #contents
+	def furnish_minor
 		#A simple transliteration from DMG3
-		@furnishMinor = Array[
+		@furnish_minor = Array[
 			"Alcove", "Altar", "Arch", "Arrow slit(wall)/Murder hole (ceiling)", "Balcony", 
 			 "Barrel", "Bed", "Bench", "Bookcase", "Brazier",
 			"Cage", "Caldron", "Carpet", "Carving", "Casket", 
@@ -58,10 +58,10 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 			"Trash (pile)", "Tripod", "Trough", "Tub", "Wall basin", 
 			 "Wardrobe", "Weapon rack", "Well", "Winch and pulley", "Workbench"
 		]
-	end
-	def furnishMajor
+	end #furnish_minor
+	def furnish_major
 		#A simple transliteration from DMG3
-		@furnishMajor = Array[
+		@furnish_major = Array[
 			"Anvil", "Ash", "Backpack", "Bale (straw)", "Bellows",
 			 "Belt", "Bits of fur", "Blanket", "Bloodstain", "Bones (humanoid)",
 			"Bones (nonhumanoid)", "Books", "Boots", "Bottle", "Box",
@@ -83,10 +83,10 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 			"Tools", "Torch (stub)", "Tray", "Trophy", "Twine",
 			 "Urn", "Utensils", "Whetstone", "Wood scraps", "Words (scrawled)"
 		]
-	end
-	def treasureHidingIn
+	end #furnish_major
+	def treasure_hiding_in
 		#Modestly modified from DMG2
-		@treasureHidingIn = Hash[
+		@treasure_hiding_in = Hash[
 			3 => "a room feature (or under the floor)",
 			5 => "a disguise spell",
 			8 => "a secret space inside a container",
@@ -95,10 +95,10 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 			15 => "a loose stone in the wall",
 			20 => "an attached 5x5 room"
 		]
-	end
-	def treasureGuardedBy
+	end #treasure_hiding_in
+	def treasure_guarded_by
 		#Modestly modified from DMG2
-		@treasureGuardedBy = Hash[
+		@treasure_guarded_by = Hash[
 			10 => "the clever hiding place",
 			12 => "contact poison (DC n)",
 			14 => "dart poison (DC n)",
@@ -106,28 +106,28 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 			18 => "trapdoor randomly in the room (d6 DC 10)",
 			20 => "a stone dropping from the ceiling (d6 DC 10)"
 		]
-	end
+	end #treasure_guarded_by
 #trapLow = {} #A simple transliteration from DMG3 
 #trapHigh = {} #A simple transliteration from DMG3
-end
+end #class Room
 
 class Door
-	def onWall
-		@onWall = Array["North","South","East","West"]
-	end
+	def on_wall
+		@on_wall = Array["North","South","East","West"]
+	end #on_wall
 #doorType = {}
-end
+end #class Door
 
 class Object
 	def d(die_type)
 		return Random.rand(1..die_type)
-	end
+	end #d
 	def randToKey(the_hash,the_roll)
 		the_hash.keys.sort.each {|this_key| return this_key if the_roll <= this_key}
-	end
+	end #randToKey ...do I use this?
 	def randToValue(the_hash,the_roll)
 		the_hash.keys.sort.each {|this_key| return the_hash[this_key] if the_roll <= this_key}
-	end
+	end #randToValue
 	def dieRoll(nDmXc)
 		just_the_numbers = nDmXc.split(/d|\+|\-/)
 		return just_the_numbers.first.to_i if just_the_numbers.length == 1
@@ -137,11 +137,10 @@ class Object
 		rolling_count = (nDmXc.include? "-") ? -constant_expression : constant_expression
 		1.upto(number_of_dice) {|n| rolling_count += d(die_type)}
 		return rolling_count
-	end
+	end #dieRoll
 	def modifiedMonsterRoll(the_roll,multiplier_key,multiplier_hash)
 		return the_roll if multiplier_key == 1
 		new_roll = multiplier_hash.fetch(multiplier_key)[the_roll]
 		return new_roll
-	end
-end
-
+	end #modifiedMonsterRoll
+end #class Object

@@ -67,7 +67,7 @@ class Master
 				"d6+5" => "d100+100"
 			}	
 		]
-	end
+	end #modifier
 
 	def master_table
 		# actual_level => d% => [adjusted_level,modifier]
@@ -193,4 +193,4 @@ class Master
 				90 => [20,1],	100 => [20,1]
 			}
 		]
-	endend
+	end #master_tableend #class Master
