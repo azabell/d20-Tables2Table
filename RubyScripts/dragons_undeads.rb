@@ -1,17 +1,17 @@
 class Dragon
-require_relative 'room_variables'
 #A simple transliteration from DMG p.126
-	attr_accessor :type
+require_relative 'room_variables'
+attr_accessor :type
 	def initialize (percentage)
 		@type = randToValue(color,percentage)
-	end
+	end #initialize
 
 	def color
 		@color = Hash[
 			16 => "White", 32 => "Black", 48 => "Green", 64 => "Blue", 80 => "Red",
 			84 => "Brass", 88 => "Copper", 91 => "Bronze", 96 => "Silver", 100 => "Gold"
 		]
-	end
+	end #color
 	def age
 		@age = Hash[
 			"White" => ["wyrmling","very young","young","juvenile","juvenile",
@@ -55,5 +55,21 @@ require_relative 'room_variables'
 			 "young adult","young adult","young adult","adult","adult",
 			 "mature adult","mature adult","mature adult","old","old"]
 		]
-	end
-end
+	end #age
+end #class Dragon
+
+class Undead
+require_relative 'room_variables'
+attr_accessor :description, :npc, :lich_class
+	def initialize (description)
+		@description = description
+	end #initialize
+	def npc
+		parse_die_roll = @description.split.last.sub(/]/,"")
+		return dieRoll(parse_die_roll)
+	end #npc
+	def lich_class
+		lich_hash = Hash[ 10 => "cleric", 40 => "sorcerer", 100 => "wizard"]
+		return randToValue(lich_hash,d(100))
+	end #lich_class
+end #class Undead
