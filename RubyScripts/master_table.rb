@@ -1,7 +1,7 @@
 class Master
 #A simple transliteration from DMG p.120-21
 	def modifier
-		# multiplier => d_Original => d_New
+	# multiplier => d_Original => d_New
 		@modifier = Hash[
 			0.3 => {
 				"1" => "1",
@@ -70,7 +70,7 @@ class Master
 	end #modifier
 
 	def master_table
-		# actual_level => d% => [adjusted_level,modifier]
+	# actual_level => d% => [adjusted_level,modifier]
 		@master_table = Hash[
 			"lvl1" => {
 				 5 => [1,1],	10 => [1,1],
@@ -193,4 +193,5 @@ class Master
 				90 => [20,1],	100 => [20,1]
 			}
 		]
-	end #master_tableend #class Master
+	end #master_table
+end #class Master
