@@ -1,6 +1,32 @@
+class Object
+	def d(die_type)
+		return Random.rand(1..die_type)
+	end #d
+	def randToKey(the_hash,the_roll)
+		the_hash.keys.sort.each {|this_key| return this_key if the_roll <= this_key}
+	end #randToKey ...do I use this?
+	def randToValue(the_hash,the_roll)
+		the_hash.keys.sort.each {|this_key| return the_hash[this_key] if the_roll <= this_key}
+	end #randToValue
+	def dieRoll(nDmXc)
+		just_the_numbers = nDmXc.split(/d|\+|\-/)
+		return just_the_numbers.first.to_i if just_the_numbers.length == 1
+		number_of_dice = (just_the_numbers.first == "") ? 1 : just_the_numbers[0].to_i
+		die_type = just_the_numbers[1].to_i
+		constant_expression = (just_the_numbers.length == 3) ? just_the_numbers[2].to_i : 0
+		rolling_count = (nDmXc.include? "-") ? -constant_expression : constant_expression
+		1.upto(number_of_dice) {|n| rolling_count += d(die_type)}
+		return rolling_count
+	end #dieRoll
+	def modifiedMonsterRoll(the_roll,multiplier_key,multiplier_hash)
+		return the_roll if multiplier_key == 1
+		new_roll = multiplier_hash.fetch(multiplier_key)[the_roll]
+		return new_roll
+	end #modifiedMonsterRoll
+end #class Object
+
 class Room
 attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :die_to_roll, :feature_list, :debug, :contents, :furnish_minor, :furnish_major, :treasure_hiding_in, :treasure_guarded_by
-
 	def initialize 
 		@monster = false
 		@feature = false
@@ -112,35 +138,60 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 end #class Room
 
 class Door
+# modestly modified DMG3 4-4, 4-9 and DMG2 II, V
+	def count
+		return dieRoll("d4")
+	end
+	def type
+		@type = Hash[
+			3 => "portal",
+			14 => "door",
+			17 => "secret door",
+			20 => "portcullis"
+		]
+	end
+	def material
+		@material = Hash[
+			30 => "simple wooden",
+			50 => "good wooden",
+			70 => "strong wooden",
+			80 => "stone",
+			90 => "iron",
+			93 => "slides to side",
+			96 => "slides down",
+			99 => "slides up",
+			100 => "magically reinforced"
+		]
+	end
+	def open
+		@open = Hash[20 => "", 60 => "stuck ", 100 => "locked "]
+	end
+	def trapped
+		@trapped = Hash[30 => true, 100 => false]
+	end
+	def quality
+		@quality = Hash[
+			"simple wooden" => {"hardness" => 5, "HP" => 10, "stuck" => 13, "locked" => 15},
+			"good wooden" => {"hardness" => 5, "HP" => 15, "stuck" => 16, "locked" => 18},
+			"strong wooden" => {"hardness" => 5, "HP" => 20, "stuck" => 23, "locked" => 25},
+			"wooden portcullis" => {"hardness" => 5, "HP" => 30, "stuck" => 25, "locked" => 25},
+			"stone" => {"hardness" => 8, "HP" => 60, "stuck" => 28, "locked" => 28},
+			"iron" => {"hardness" => 10, "HP" => 60, "stuck" => 28, "locked" => 28},
+			"iron portcullis" => {"hardness" => 10, "HP" => 60, "stuck" => 25, "locked" => 25},
+			"slides to side" => {"break" => "d6"},
+			"slides down" => {"break" => "d6"},
+			"slides up" => {"break" => "2d6"},
+			"magically reinforced" => {"break" => "15"},
+			"lock" => {"hardness" => 15, "HP" => 30},
+			"hinge" => {"hardness" => 15, "HP" => 30}
+		]
+	end
 	def on_wall
-		@on_wall = Array["North","South","East","West"]
-	end #on_wall
-#doorType = {}
+		@on_wall = Hash[
+			7 => "opposite",
+			12 => "left",
+			17 => "right",
+			20 => "same"
+		]
+	end
 end #class Door
-
-class Object
-	def d(die_type)
-		return Random.rand(1..die_type)
-	end #d
-	def randToKey(the_hash,the_roll)
-		the_hash.keys.sort.each {|this_key| return this_key if the_roll <= this_key}
-	end #randToKey ...do I use this?
-	def randToValue(the_hash,the_roll)
-		the_hash.keys.sort.each {|this_key| return the_hash[this_key] if the_roll <= this_key}
-	end #randToValue
-	def dieRoll(nDmXc)
-		just_the_numbers = nDmXc.split(/d|\+|\-/)
-		return just_the_numbers.first.to_i if just_the_numbers.length == 1
-		number_of_dice = (just_the_numbers.first == "") ? 1 : just_the_numbers[0].to_i
-		die_type = just_the_numbers[1].to_i
-		constant_expression = (just_the_numbers.length == 3) ? just_the_numbers[2].to_i : 0
-		rolling_count = (nDmXc.include? "-") ? -constant_expression : constant_expression
-		1.upto(number_of_dice) {|n| rolling_count += d(die_type)}
-		return rolling_count
-	end #dieRoll
-	def modifiedMonsterRoll(the_roll,multiplier_key,multiplier_hash)
-		return the_roll if multiplier_key == 1
-		new_roll = multiplier_hash.fetch(multiplier_key)[the_roll]
-		return new_roll
-	end #modifiedMonsterRoll
-end #class Object
