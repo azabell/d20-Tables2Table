@@ -12,7 +12,26 @@ room_has = Room.new
 door_is = Door.new
 puts "#{level} #{room_size}" if room_has.debug
 ### Doors
-puts "yup, it's a #{room_size} sq ft room" if room_size > 0
+puts "yup, it's a #{room_size} sq ft room" if room_size > 0 && room_has.debug
+if room_size > 0 then
+	print "In this #{room_size} sq ft room the other exits are \n"
+	1.upto(door_is.count) { |n|
+		egress = randToValue(door_is.type,d(20))
+		construction = randToValue(door_is.material,d(100))
+		construction << " "+randToValue(door_is.material,d(90)) if door_is.material.key(construction).to_i > 90
+		condition = randToValue(door_is.open,d(100))
+		condition << "trapped " if randToValue(door_is.trapped,d(100))
+		if egress == "portal" then
+			construction = ""
+			condition = ""
+		elsif egress == "portcullis" then
+			construction = construction.sub(/stone/,"iron").sub(/(simple|good|strong) /,"")
+		end
+		print " (#{n}) A #{condition}#{construction} #{egress} on the"
+		print " #{randToValue(door_is.on_wall,d(20))} wall.\n"
+		print " \tPut a tab here\n"
+	}
+end
 
 ### Contents
 randToValue(room_has.contents,d(100)).each {|item| room_has.instance_variable_set("@"+item,true)}
@@ -23,7 +42,6 @@ end
 if room_has.empty then
 	puts "Nothing. Nada. All pau."
 end
-
 room_has.monster = true if room_has.debug
 if room_has.monster then
 	puts "Ahhh! Monsters!" if room_has.debug
@@ -81,4 +99,4 @@ end
 ### Wandering Monsters
 i = 0
 i += 1 until d(100) > 90
-puts "Make another Wandering Monster check in #{60+60*i} feet, reset if there's combat"
+puts "Make another Hallway Encounter check in #{30+30*i} feet, reset if there's combat"
