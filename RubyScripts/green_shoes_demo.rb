@@ -28,89 +28,78 @@ Shoes.app :title => "two radios and an answer",
 	this_is = Outside_the_shoe.new
 
 	background gray
-	@opt = "l1"
-	@opt2 = false
-	flow :width => 45 do
+	@in_a_room = false
+	flow :width => 98, :margin_left => 3, :margin_right => 5 do # frustratingly hackish box-for-a-box
 		background gold
-		para "1", :width => 20, :align => "center"
-		radio :first, :checked => true do @opt = "l1" end
-		para "2", :width => 20, :align => "center"
-		radio :first do @opt = "l2" end
-		para "3", :width => 20, :align => "center"
-		radio :first do @opt = "l3" end
-		para "4", :width => 20, :align => "center"
-		radio :first do @opt = "l4" end
-		para "5", :width => 20, :align => "center"
-		radio :first do @opt = "l5" end
-		para "6", :width => 20, :align => "center"
-		radio :first do @opt = "l6" end
-		para "7", :width => 20, :align => "center"
-		radio :first do @opt = "l7" end
-		para "8", :width => 20, :align => "center"
-		radio :first do @opt = "l8" end
-		para "9", :width => 20, :align => "center"
-		radio :first do @opt = "l9" end
-		para "10", :width => 20
-		radio :first do @opt = "l10" end
+		flow :width => 90 do
+		@level = [
+				[para("1", :width => 18, :align => "center"), radio(:checked => true)],
+				[para("11", :width => 28, :align => "right"), radio],
+				[para("2", :width => 18, :align => "center"), radio],
+				[para("12", :width => 28, :align => "right"), radio],
+				[para("3", :width => 18, :align => "center"), radio],
+				[para("13", :width => 28, :align => "right"), radio],
+				[para("4", :width => 18, :align => "center"), radio],
+				[para("14", :width => 28, :align => "right"), radio],
+				[para("5", :width => 18, :align => "center"), radio],
+				[para("15", :width => 28, :align => "right"), radio],
+				[para("6", :width => 18, :align => "center"), radio],
+				[para("16", :width => 28, :align => "right"), radio],
+				[para("7", :width => 18, :align => "center"), radio],
+				[para("17", :width => 28, :align => "right"), radio],
+				[para("8", :width => 18, :align => "center"), radio],
+				[para("18", :width => 28, :align => "right"), radio],
+				[para("9", :width => 18, :align => "center"), radio],
+				[para("19", :width => 28, :align => "right"), radio],
+				[para("10", :width => 18), radio],
+				[para("20", :width => 28, :align => "right"), radio]]
+		end
 	end
-	flow :width => 55 do
-		background gold
-#		i = 11
-#		while i <=20 do
-#			para i, :width => 22
-#			radio :first do @opt = "l"+i.to_s end
-#			i += 1
-#		end
-		para "11", :width => 28, :align => "right"
-		radio :first do @opt = "l11" end
-		para "12", :width => 28, :align => "right"
-		radio :first do @opt = "l12" end
-		para "13", :width => 28, :align => "right"
-		radio :first do @opt = "l13" end
-		para "14", :width => 28, :align => "right"
-		radio :first do @opt = "l14" end
-		para "15", :width => 28, :align => "right"
-		radio :first do @opt = "l15" end
-		para "16", :width => 28, :align => "right"
-		radio :first do @opt = "l16" end
-		para "17", :width => 28, :align => "right"
-		radio :first do @opt = "l17" end
-		para "18", :width => 28, :align => "right"
-		radio :first do @opt = "l18" end
-		para "19", :width => 28, :align => "right"
-		radio :first do @opt = "l19" end
-		para "20", :width => 28, :align => "right"
-		radio :first do @opt = "l20" end
-	end
-	show_answer = flow :width => 430, :height => 600 do
+	flow :width => 430, :height => 600 do
+		# @level.each {|a,b| 
+			# puts a.text
+			# puts a.text if b.checked?
+		# } # provides the text value provided in front of the radio button
 		background tomato
-		@b1 = button("Do it").move(105, 45)
-		tf = flow :width => 120 do
+		border orange, :strokewidth => 5
+		flow :width => 110, :height => 75, :margin_left => 3, :margin_right => 5 do # frustratingly hackish box-for-a-box
 			background yellow
-			para "With", :width => 80
-			radio :second do @opt2 = true end
-			para "Without", :width => 80 
-			radio :second, :checked => true do @opt2 = false end
-			b_x = button("hidden").hide
-			b2 = button("do nothing")
+			fill tomato
+			nostroke
+			rect(110+98-5,0,5,75)
+			flow :width => 100 do
+				para "With", :width => 70
+				radio do @in_a_room = true end
+				para "Without", :width => 70 
+				radio :checked => true do @in_a_room = false end
+				b_x = button("hidden").hide
+#				b2 = button("do nothing")
+			end
 		end
 		fill lightgreen
 		nostroke
-		box1 = rect(100,106,120,40).hide
-		@is_with = para("is with?", :width => 300)
-		@is_now = para("blank")
-		@b1.click {
+		box1 = rect(100,73,120,40).hide
+		b1 = button("Do it").move(105, 45)
+		b1.click {
+			@level.each {|a,b| @master_level_is = "lvl"+a.text if b.checked? }
 			@is_with.replace("")
-			@is_with.replace("yes it has "+this_is.some_other_string(@opt2)) if @opt2 
-			because_its_random = this_is.some_string(@opt)
-			@is_now.hide.replace(because_its_random)
+			@is_with.replace("yes it has "+this_is.some_other_string(@in_a_room)) if @in_a_room 
+			because_its_random = this_is.some_string(@master_level_is)
 			if because_its_random.include? "FRIEND" 
-				box1.show 
+				box1.show
+				@is_now.style(:strong)
 			else
 				box1.hide
+#				@is_now.style(:
 			end
-			@is_now.show
+			@is_now.replace(because_its_random)
 		}
+		the_doors = flow :width => 300, :height => 75 do
+				@is_with = para("is with?", :width => 250)
+		end
+		the_contents = stack do
+				@is_now = para("blank")
+		end
 	end
 end
 
@@ -124,4 +113,3 @@ end
 #	stroke red
 #	star 100, 100, fill: gradient(blue, orange), angle: 45
 #end
-
