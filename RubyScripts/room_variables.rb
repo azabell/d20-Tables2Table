@@ -22,7 +22,7 @@ end #class Object
 
 class Room
 require_relative 'dragons_undeads'
-attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :die_to_roll, :feature_list, :debug, :contents, :furnish_minor, :furnish_major, :treasure_hiding_in, :treasure_guarded_by
+attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :feature_list, :debug, :contents, :furnish_minor, :furnish_major, :treasure_hiding_in, :treasure_guarded_by
 	def initialize 
 		@monster = false
 		@feature = false
@@ -30,7 +30,6 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 		@trap = false
 		@special = false
 		@empty = false
-		@die_to_roll = Array.new
 		@feature_list = Array.new
 		@debug = false
 	end #initialize
