@@ -171,13 +171,18 @@ class Door
 	end
 	def quality
 		@quality = Hash[
+			"portal" => {"hardness" => 0, "HP" => 0},
 			"simple wooden" => {"hardness" => 5, "HP" => 10, "stuck" => 13, "locked" => 15},
 			"good wooden" => {"hardness" => 5, "HP" => 15, "stuck" => 16, "locked" => 18},
 			"strong wooden" => {"hardness" => 5, "HP" => 20, "stuck" => 23, "locked" => 25},
-			"wooden portcullis" => {"hardness" => 5, "HP" => 30, "stuck" => 25, "locked" => 25},
 			"stone" => {"hardness" => 8, "HP" => 60, "stuck" => 28, "locked" => 28},
 			"iron" => {"hardness" => 10, "HP" => 60, "stuck" => 28, "locked" => 28},
-			"iron portcullis" => {"hardness" => 10, "HP" => 60, "stuck" => 25, "locked" => 25},
+			"wooden portcullis" => {"hardness" => 5, "HP" => 30, "stuck" => 25, "locked" => 25},
+			"iron portcullis" => {"hardness" => 10, "HP" => 60, "stuck" => 25, "locked" => 25}
+		]
+	end
+	def quality_modifiers
+		@quality_modifiers = Hash[
 			"slides to side" => {"break" => "d6"},
 			"slides down" => {"break" => "d6"},
 			"slides up" => {"break" => "2d6"},
@@ -193,5 +198,30 @@ class Door
 			17 => "right",
 			20 => "same"
 		]
+	end
+	def constructed_with(the_door,egress)
+		output_text = randToValue(the_door.material,d(100))
+		output_text << " "+randToValue(the_door.material,d(90)) if the_door.material.key(output_text).to_i > 90
+		output_text = "" if egress == " portal"
+		output_text = output_text.sub(/stone/,"iron").sub(/(simple|good|strong) /,"") if egress == " portcullis"
+		return output_text
+	end
+	def latched(the_door,egress)
+		output_text = randToValue(the_door.open,d(100))
+		output_text << "trapped " if randToValue(the_door.trapped,d(100))
+		output_text = "" if egress == " portal"
+		return output_text
+	end
+	def ruled_by(the_door,construction_text,latch_text,egress)
+		door_type = construction_text.split.last(2).join(" ")
+		door_type = "portal" if egress == " portal"
+		door_type = door_type.split.last if door_type.split.last != "wooden"
+		door_type = door_type.split.last+egress if egress == " portcullis"
+		output_text = "\thardness: #{the_door.quality[door_type]["hardness"]}"
+		output_text << "\tHP: #{the_door.quality[door_type]["HP"]}"
+		output_text << "    break DC: #{the_door.quality[door_type]["stuck"]}" if latch_text.include? "stuck"
+		output_text << "    break DC: #{the_door.quality[door_type]["locked"]}" if latch_text.include? "locked"
+		#output_text << "    break: #{the_door.quality[door_construction]["break"]} if latch_text.include? "slides"
+		return output_text
 	end
 end #class Door
