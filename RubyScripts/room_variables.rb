@@ -18,14 +18,10 @@ class Object
 		1.upto(number_of_dice) {|n| rolling_count += d(die_type)}
 		return rolling_count
 	end #dieRoll
-	def modifiedMonsterRoll(the_roll,multiplier_key,multiplier_hash)
-		return the_roll if multiplier_key == 1
-		new_roll = multiplier_hash.fetch(multiplier_key)[the_roll]
-		return new_roll
-	end #modifiedMonsterRoll
 end #class Object
 
 class Room
+require_relative 'dragons_undeads'
 attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :die_to_roll, :feature_list, :debug, :contents, :furnish_minor, :furnish_major, :treasure_hiding_in, :treasure_guarded_by
 	def initialize 
 		@monster = false
@@ -135,6 +131,38 @@ attr_accessor :monster, :feature, :hidden_treasure, :trap, :special, :empty, :di
 	end #treasure_guarded_by
 #trapLow = {} #A simple transliteration from DMG3 
 #trapHigh = {} #A simple transliteration from DMG3
+	def modifiedMonsterRoll(the_roll,multiplier_key,multiplier_hash)
+		return the_roll if multiplier_key == 1
+		new_roll = multiplier_hash.fetch(multiplier_key)[the_roll]
+		return new_roll
+	end
+	def monster_what(monster,adjusted_level)
+		output_text = monster[0]
+		if monster[2] == "dragon" then
+			dragon = Dragon.new(d(100))
+			output_text = "#{dragon.age[dragon.type][adjusted_level-1]} #{dragon.type} dragon"
+		elsif monster[2] == "undead" then
+			undead = Undead.new(monster[0])
+			output_text = "ghost, #{undead.npc} NPC levels" if monster[0].include? "ghost [NPC level"
+			output_text = "vampire, #{undead.npc} NPC levels" if monster[0].include? "vampire [NPC level"
+			output_text = "lich (level #{undead.npc} #{undead.lich_class})" if monster[0].include? "lich [NPC level"
+		end
+		return output_text
+	end
+	def monster_how_many(monster,modifier,adjusted_modifier)
+		output_text = Array.new
+		Array(monster[1]).each_index{ |a| 
+			output_text << modifiedMonsterRoll(Array(monster[1])[a],modifier,adjusted_modifier)
+		}
+		return output_text
+	end
+	def monster_treasure(monster,level)
+		####This is where I can/should insert the treasure text
+		output_text = "None"
+		output_text = "table 7-4(p170) for Level #{level+monster[4]}" if d(100) < 100*monster[3]
+		####
+		return output_text
+	end
 end #class Room
 
 class Door
