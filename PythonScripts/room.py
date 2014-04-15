@@ -4,6 +4,7 @@ import dragons
 import undead
 import room_tables
 import door_tables
+import dungeon
 
 
 class Door:
@@ -64,6 +65,11 @@ class Door:
         return output_text
 
 
+class Contents:
+    def master_list(roll="d100"):
+        return randToValue(room_tables.contents, dieRoll(roll))
+
+
 class Monster:
     def modified_monster_roll(old_roll, multiplier_key):
         if multiplier_key == 1:
@@ -78,7 +84,6 @@ class Monster:
         return [Monster.modified_monster_roll(x, effective_level_modifier) for x in monster[1]]
 
     def what_kind(monster, effective_level):
-        output_text = monster[0]
         if monster[2] == "dragon":
             dragon_type = randToValue(dragons.color, d(100))
             dragon_size = randToValue(dragons.age, dragon_type)[effective_level - 1]
@@ -90,14 +95,55 @@ class Monster:
                 output_text = "vampire, %s NPC levels" % undead.npc(monster[0])
             elif monster[0].startswith("lich [NPC"):
                 output_text = "lich (level %s %s)" % (undead.npc(monster[0]), undead.lich_class())
-        #else:
-        #    output_text = monster[0]
+        else:
+            output_text = monster[0]
+        if isinstance(monster[0], str):
+            output_text = [output_text]
         return output_text
 
-    def with_treasure(monster, actual_level):
+    def treasure_kept(monster, actual_level):
         ####This is where I can/should insert the treasure text
         if 100 * monster[3] > d(100):
             output_text = "table 7-4(p170) for Level %s" % str(actual_level + monster[4])
         else:
             output_text = "None"
         return output_text
+
+    def information(actual_level):
+        effective_level = randToValue(dungeon.master_table["lvl"+str(actual_level)],d(100))
+        of_this_monster = randToValue(getattr(dungeon, "level_"+str(effective_level[0])), d(100))
+        monsters  = Monster.what_kind(of_this_monster,effective_level[0])
+        number_of = Monster.how_many(of_this_monster,effective_level[1])
+        treasure  = Monster.treasure_kept(of_this_monster,actual_level)
+        output_text = "~~~ Encounter: FRIEND :\n" if of_this_monster[2] == "friend" else "~~~ Encounter: \n"
+        for n in range(len(number_of)):
+            output_text += " %s %s" % (dieRoll(number_of[n]), monsters[n])
+            if n+1 < len(number_of): output_text += " and"
+        output_text += "\n  Treasure: %s\n\n" % treasure
+        return output_text
+
+
+class Feature:
+    def found_list(roll="d4", scale="minor"):
+        if isinstance(roll, str): roll = dieRoll(roll)
+        which_furniture = {"minor": room_tables.furnish_minor, "major": room_tables.furnish_major}
+        these_features = []
+        for n in range(0, roll): these_features.append(which_furniture[scale][d(100) - 1])
+        return these_features
+
+    def catalogue(roll="d100"):
+        if isinstance(roll, str): roll = dieRoll(roll)
+        list_of_features = []
+        if roll <= 60:
+            list_of_features.extend(Feature.found_list(d(4), "minor"))
+        if roll > 40:
+            list_of_features.extend(Feature.found_list(d(4), "major"))
+        output_text = ", ".join(sorted(list_of_features))
+        return output_text
+
+
+'''
+class Treasure:
+
+class Trap:
+'''
