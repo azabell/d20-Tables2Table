@@ -15,7 +15,7 @@ contents = {18: ["monster"],
             80: ["hidden_treasure"],
             81: ["hidden_treasure", "trap"],
             82: ["trap"],
-            100: ["empty"]}
+            100: ["nothing"]}
 # furnish_minor: a simple transliteration from DMG3
 furnish_minor = [
     "Alcove", "Altar", "Arch", "Arrow slit(wall)/Murder hole (ceiling)", "Balcony",
