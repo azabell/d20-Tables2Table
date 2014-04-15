@@ -4,7 +4,9 @@ import room
 
 #ARGV.length < 1 ? fail("\n You need to specify the dungeon level") : actual_level = ARGV[0].to_i
 #ARGV.length > 2 ? fail("\n Only two input variables, please") : room_size = ARGV[1].to_i
+actual_level = 10
 room_size = 1
+wandering_monster = True
 
 ### Doors
 if room_size > 0:
@@ -19,6 +21,23 @@ if room_size > 0:
     print("\n")
 
 ### Contents
+this_room = room.Contents.master_list()
+if wandering_monster: this_room.append("monster")
+if "special" in this_room:
+    print("~~~ Special: reroll, or staircase, or Shop\n\n")
+if "nothing" in this_room:
+    print("~~~ Empty room. Or is it...\n\n")
+if "feature" in this_room:
+    print("~~~ You find: %s \n\n" % room.Feature.catalogue())
+if "monster" in this_room:
+    print(room.Monster.information(actual_level))
+
+
+if "hidden_treasure" in this_room:
+
+if "trap" in this_room:
+
+### Wandering Monster
 
 '''
 require_relative 'room_variables'
@@ -33,12 +52,6 @@ puts "#{actual_level} #{room_size}" if room_has.debug
 ### Contents
 randToValue(room_has.contents,d(100)).each {|item| room_has.instance_variable_set("@"+item,true)}
 
-if room_has.special then
-	print "~~~ Special: reroll, or staircase, or Shop\n\n"
-end
-if room_has.empty then
-	print "~~~ Empty room. Or is it...\n\n"
-end
 room_has.monster = true if room_has.debug
 if room_has.monster then
 	level_master = randToValue(adjusted.master_table.fetch("lvl"+actual_level.to_s),d(100))
@@ -55,14 +68,6 @@ if room_has.monster then
 	print "\n"
 	print "  Treasure: #{treasure}\n\n"
 	puts monster if room_has.debug
-end
-if room_has.feature then
-	print "~~~ You find: "
-	feature_type = d(100)
-	1.upto(d(4)) { |minor| room_has.feature_list << room_has.furnish_minor[d(100)-1] } if feature_type <= 60
-	1.upto(d(4)) { |major| room_has.feature_list << room_has.furnish_major[d(100)-1] } if feature_type > 40
-	room_has.feature_list.sort!.each {|n| print "#{n}"; print ", " if n != room_has.feature_list.last}
-	print "\n\n"
 end
 if room_has.hidden_treasure then
 	print "~~~ Hidden by/in #{randToValue(room_has.treasure_hiding_in,d(20))} and protected by\n"
