@@ -71,13 +71,6 @@ class Contents:
 
 
 class Monster:
-    def modified_monster_roll(old_roll, multiplier_key):
-        if multiplier_key == 1:
-            new_roll = old_roll
-        else:
-            new_roll = room_tables.monsterDiceModifier[multiplier_key][old_roll]
-        return new_roll
-
     def how_many(monster, effective_level_modifier):
         if isinstance(monster[1], str):
             monster[1] = [monster[1]]
@@ -109,6 +102,13 @@ class Monster:
             output_text = "None"
         return output_text
 
+    def modified_monster_roll(old_roll, multiplier_key):
+        if multiplier_key == 1:
+            new_roll = old_roll
+        else:
+            new_roll = dungeon.monster_dice_modifier[multiplier_key][old_roll]
+        return new_roll
+
     def information(actual_level):
         effective_level = randToValue(dungeon.master_table["lvl"+str(actual_level)],d(100))
         of_this_monster = randToValue(getattr(dungeon, "level_"+str(effective_level[0])), d(100))
@@ -131,19 +131,46 @@ class Feature:
         for n in range(0, roll): these_features.append(which_furniture[scale][d(100) - 1])
         return these_features
 
-    def catalogue(roll="d100"):
+    def information(roll="d100"):
         if isinstance(roll, str): roll = dieRoll(roll)
         list_of_features = []
         if roll <= 60:
             list_of_features.extend(Feature.found_list(d(4), "minor"))
         if roll > 40:
             list_of_features.extend(Feature.found_list(d(4), "major"))
-        output_text = ", ".join(sorted(list_of_features))
+        output_text = "~~~ You find: "
+        output_text += ", ".join(sorted(list_of_features))
+        output_text += "\n\n"
         return output_text
 
 
-'''
 class Treasure:
+    def hidden_by(roll="d20"):
+        return randToValue(room_tables.treasure_hiding_places, dieRoll(roll))
+
+    def guarded_by(roll="d20"):
+        return randToValue(room_tables.treasure_traps, dieRoll(roll))
+
+    def information(actual_level,kind="hidden"):
+        where_is_it = Treasure.hidden_by()
+        what_guards_it = Treasure.guarded_by()
+        search_dc = 20+actual_level+dieRoll("d10-5")
+        output_text = "~~~ Hidden by/in %s" % where_is_it
+        if what_guards_it != "None":
+            output_text += " and protected by\n    %s" % what_guards_it
+        output_text += " is a treasure for\n"
+        output_text += "    Level %s that will take a Search DC %s to find.\n\n" % (actual_level, search_dc)
+        return output_text
+
 
 class Trap:
-'''
+    def information(actual_level):
+        search_dc = 20+actual_level+dieRoll("d10-5")
+        if actual_level <= 2:
+            scale = "minor"
+        elif actual_level >= 5:
+            scale = "major"
+        else:
+            scale = "minor" if d(100) <= 50 else "major"
+        output_text = "~~~ Uncareful movement triggers a %s trap. Search DC %s to find.\n\n" % (scale, search_dc)
+        return output_text
