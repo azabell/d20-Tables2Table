@@ -102,6 +102,26 @@ class Monster:
             output_text = "None"
         return output_text
 
+    def wandering_monster_check(actual_level):
+        i = 0
+        while True:
+            i += 1
+            if d(100) > 90:
+                break
+        next_check_in = 30+(30*i)
+        what_do_we_find = "Nothing" #randToKey(someLookupTable, d(something))
+        if what_do_we_find == "Nothing":
+            pass
+        elif what_do_we_find == "monster":
+            pass
+        elif what_do_we_find == "trap":
+            pass
+        you_found = "Nothing or Monster or Trap"
+        next_hallway_check = ("~~~ Make another Hallway Encounter check in %s feet, " % next_check_in +
+                       "reset if there's combat\n\n\n")
+        output_text = you_found + next_hallway_check
+        return output_text
+
     def modified_monster_roll(old_roll, multiplier_key):
         if multiplier_key == 1:
             new_roll = old_roll

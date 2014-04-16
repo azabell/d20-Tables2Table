@@ -4,7 +4,7 @@ import room
 
 #ARGV.length < 1 ? fail("\n You need to specify the dungeon level") : actual_level = ARGV[0].to_i
 #ARGV.length > 2 ? fail("\n Only two input variables, please") : room_size = ARGV[1].to_i
-actual_level = 3
+dungeon_level = 3
 room_size = 1
 wandering_monster = True
 
@@ -22,7 +22,7 @@ if room_size > 0:
 
 ### Contents
 this_room = room.Contents.master_list()
-if wandering_monster: this_room.append("monster")
+if wandering_monster: this_room = ("monster")
 if "special" in this_room:
     print("~~~ Special: reroll, or staircase, or Shop\n\n")
 if "nothing" in this_room:
@@ -30,17 +30,13 @@ if "nothing" in this_room:
 if "feature" in this_room:
     print(room.Feature.information())
 if "monster" in this_room:
-    print(room.Monster.information(actual_level))
+    print(room.Monster.information(dungeon_level))
 if "hidden_treasure" in this_room:
-    print(room.Treasure.information(actual_level))
+    print(room.Treasure.information(dungeon_level))
 if "trap" in this_room:
-    print(room.Trap.information(actual_level))
+    print(room.Trap.information(dungeon_level))
 
-'''
-### Wandering Monster
-i = 0
-i += 1 until d(100) > 90
-puts "~~~ Make another Hallway Encounter check in #{30+30*i} feet, reset if there's combat"
+### Wandering Monsters
+if wandering_monster:
+    print(room.Monster.wandering_monster_check(dungeon_level))
 
-print "\n\n\n"
-'''
