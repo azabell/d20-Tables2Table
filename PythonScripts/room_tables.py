@@ -62,74 +62,20 @@ furnish_major = [
     "Tools", "Torch (stub)", "Tray", "Trophy", "Twine",
     "Urn", "Utensils", "Whetstone", "Wood scraps", "Words (scrawled)"
 ]
-# treasure_hiding_in: modestly modified from DMG2
-treasure_hiding_in = {3: "a room feature (or under the floor)",
-                      5: "a disguise spell",
-                      8: "a secret space inside a container",
-                      10: "plain view",
-                      13: "a loose stone in the floor",
-                      15: "a loose stone in the wall",
-                      20: "an attached 5x5 room"}
-# treasure_guarded_by: modestly modified from DMG2
-treasure_guarded_by = {10: "the clever hiding place",
-                       12: "contact poison (DC n)",
-                       14: "dart poison (DC n)",
-                       16: "trapdoor in front of object (d6 DC 10)",
-                       18: "trapdoor randomly in the room (d6 DC 10)",
-                       20: "a stone dropping from the ceiling (d6 DC 10)"}
+# treasure_hiding_places: modestly modified from DMG2
+treasure_hiding_places = {3: "a room feature (or under the floor)",
+                          5: "a disguise spell",
+                          8: "a secret space inside a container",
+                          10: "plain view",
+                          13: "a loose stone in the floor",
+                          15: "a loose stone in the wall",
+                          20: "an attached 5x5 room"}
+# treasure_traps: modestly modified from DMG2
+treasure_traps = {10: "None",
+                  12: "contact poison (DC n)",
+                  14: "dart poison (DC n)",
+                  16: "trapdoor in front of object (d6 DC 10)",
+                  18: "trapdoor randomly in the room (d6 DC 10)",
+                  20: "a stone dropping from the ceiling (d6 DC 10)"}
 # trapLow: #a simple transliteration from DMG3
 # trapHigh: #a simple transliteration from DMG3
-
-# monsterDiceModifier: #a simple transliteration from DMG3 p.120-21.
-# given key1, change the original dieRoll (key2) to the new dieRoll (value2)
-monsterDiceModifier = {
-    0.3: {"1": "1",
-          "d2": "1",
-          "d3": "1",
-          "d3+1": "1",
-          "d4+2": "d2",
-          "d6+3": "d3",
-          "d6+5": "d3+1" },
-    0.5: {"1": "1",
-          "d2": "1",
-          "d3": "1",
-          "d3+1": "d2",
-          "d4+2": "d3",
-          "d6+3": "d3+1",
-          "d6+5": "d4+2" },
-    0.7: {"1": "1",
-          "d2": "1",
-          "d3": "d2",
-          "d3+1": "d3",
-          "d4+2": "d3+1",
-          "d6+3": "d4+2",
-          "d6+5": "d6+3" },
-    1.5: {"1": "d2",
-          "d2": "d3",
-          "d3": "d3+1",
-          "d3+1": "d4+2",
-          "d4+2": "d6+3",
-          "d6+3": "d6+5",
-          "d6+5": "d4+10" },
-    2: {"1": "d3",
-        "d2": "d3+1",
-        "d3": "d4+2",
-        "d3+1": "d6+3",
-        "d4+2": "d6+5",
-        "d6+3": "d4+10",
-        "d6+5": "d100+100" },
-    3: {"1": "d3+1",
-        "d2": "d4+2",
-        "d3": "d6+3",
-        "d3+1": "d6+5",
-        "d4+2": "d4+10",
-        "d6+3": "d100+100",
-        "d6+5": "d100+100" },
-    4: {"1": "d4+2",
-        "d2": "d6+3",
-        "d3": "d6+5",
-        "d3+1": "d4+10",
-        "d4+2": "d100+100",
-        "d6+3": "d100+100",
-        "d6+5": "d100+100" }
-}
