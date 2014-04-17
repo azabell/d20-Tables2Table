@@ -7,6 +7,26 @@ import door_tables
 import dungeon
 
 
+class Description:
+    #command_line = ['yadm.py','room:1000','level:10', 'w']
+    #command_line = ['yadm.py','r1000','l10w']
+    def parse_input(command_line):
+        valid_fields = re.search("r|l|w", "".join(command_line[1:]))
+        if valid_fields == None or len(command_line) > 3:
+            return " ERROR : Poor or missing syntax\n       : yadm.py (rSIZE) (lLEVEL[w]) "
+        command_hash = {}
+        for element in command_line[1:]:
+            if "r" in element:
+                command_hash["room"] = int(re.sub("r","",element))
+            elif "l" in element:
+                command_hash["level"] = int(re.sub("l|w","",element))
+                command_hash["wander"] = True if "w" in element else False
+        return command_hash
+
+    def of_what_is_here(roll="d100"):
+        return randToValue(room_tables.contents, dieRoll(roll))
+
+
 class Door:
     def door_count(roll="d4"):
         return dieRoll(roll)
@@ -65,11 +85,6 @@ class Door:
         return output_text
 
 
-class Contents:
-    def master_list(roll="d100"):
-        return randToValue(room_tables.contents, dieRoll(roll))
-
-
 class Monster:
     def how_many(monster, effective_level_modifier):
         if isinstance(monster[1], str):
@@ -77,19 +92,18 @@ class Monster:
         return [Monster.modified_monster_roll(x, effective_level_modifier) for x in monster[1]]
 
     def what_kind(monster, effective_level):
+        output_text = monster[0]
         if monster[2] == "dragon":
             dragon_type = randToValue(dragons.color, d(100))
             dragon_size = randToValue(dragons.age, dragon_type)[effective_level - 1]
             output_text = "%s %s Dragon" % (dragon_size, dragon_type)
         elif monster[2] == "undead":
-            if monster[0].startswith("ghost [NPC"):
+            if monster[0][0].startswith("ghost [NPC"):
                 output_text = "ghost, %s NPC levels" % undead.npc(monster[0])
-            elif monster[0].startswith("vampire [NPC"):
+            elif monster[0][0].startswith("vampire [NPC"):
                 output_text = "vampire, %s NPC levels" % undead.npc(monster[0])
-            elif monster[0].startswith("lich [NPC"):
+            elif monster[0][0].startswith("lich [NPC"):
                 output_text = "lich (level %s %s)" % (undead.npc(monster[0]), undead.lich_class())
-        else:
-            output_text = monster[0]
         if isinstance(monster[0], str):
             output_text = [output_text]
         return output_text
@@ -102,32 +116,26 @@ class Monster:
             output_text = "None"
         return output_text
 
-    def wandering_monster_check(actual_level):
-        i = 0
-        while True:
-            i += 1
-            if d(100) > 90:
-                break
-        next_check_in = 30+(30*i)
-        what_do_we_find = "Nothing" #randToKey(someLookupTable, d(something))
-        if what_do_we_find == "Nothing":
-            pass
-        elif what_do_we_find == "monster":
-            pass
-        elif what_do_we_find == "trap":
-            pass
-        you_found = "Nothing or Monster or Trap"
-        next_hallway_check = ("~~~ Make another Hallway Encounter check in %s feet, " % next_check_in +
-                       "reset if there's combat\n\n\n")
-        output_text = you_found + next_hallway_check
-        return output_text
-
     def modified_monster_roll(old_roll, multiplier_key):
         if multiplier_key == 1:
             new_roll = old_roll
         else:
             new_roll = dungeon.monster_dice_modifier[multiplier_key][old_roll]
         return new_roll
+
+    def wandering_monster_check(actual_level):
+        units_of = 1
+        distance = 30
+        while True:
+            if d(100) > 90:
+                break
+            units_of += 1
+        next_check_in = units_of*distance
+        next_hallway_check_after = ("~~~ Make another Hallway Encounter check in %s feet, " % next_check_in +
+                                    "reset if there's combat\n")
+        what_you_found = Monster.information(actual_level)
+        output_text = next_hallway_check_after + what_you_found
+        return output_text
 
     def information(actual_level):
         effective_level = randToValue(dungeon.master_table["lvl"+str(actual_level)],d(100))
@@ -139,7 +147,7 @@ class Monster:
         for n in range(len(number_of)):
             output_text += " %s %s" % (dieRoll(number_of[n]), monsters[n])
             if n+1 < len(number_of): output_text += " and"
-        output_text += "\n  Treasure: %s\n\n" % treasure
+        output_text += "\n  Treasure: %s" % treasure
         return output_text
 
 
@@ -160,7 +168,6 @@ class Feature:
             list_of_features.extend(Feature.found_list(d(4), "major"))
         output_text = "~~~ You find: "
         output_text += ", ".join(sorted(list_of_features))
-        output_text += "\n\n"
         return output_text
 
 
@@ -179,7 +186,7 @@ class Treasure:
         if what_guards_it != "None":
             output_text += " and protected by\n    %s" % what_guards_it
         output_text += " is a treasure for\n"
-        output_text += "    Level %s that will take a Search DC %s to find.\n\n" % (actual_level, search_dc)
+        output_text += "    Level %s that will take a Search DC %s to find." % (actual_level, search_dc)
         return output_text
 
 
@@ -192,5 +199,5 @@ class Trap:
             scale = "major"
         else:
             scale = "minor" if d(100) <= 50 else "major"
-        output_text = "~~~ Uncareful movement triggers a %s trap. Search DC %s to find.\n\n" % (scale, search_dc)
+        output_text = "~~~ Uncareful movement triggers a %s trap. Search DC %s to find." % (scale, search_dc)
         return output_text
