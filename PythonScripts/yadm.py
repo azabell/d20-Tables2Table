@@ -3,11 +3,11 @@ import sys
 import room
 
 whats_here = room.Description.parse_input(sys.argv)
-if "ERROR" in whats_here:
-    sys.exit(whats_here)
+if "ERROR" in whats_here: sys.exit(whats_here)
 room_size = whats_here["room"] if "room" in whats_here else False
 dungeon_level = whats_here["level"] if "level" in whats_here else False
 wandering_monster = whats_here["wander"] if "wander" in whats_here else False
+
 
 ### Doors
 if room_size:
@@ -20,9 +20,10 @@ if room_size:
         print(" (%i) A %s on the %s wall." % (n+1, egress_text, this_door.location()) )
         if egress_text != "portal": print(this_door.game_details(egress_text))
 
+
 ### Contents
 this_room = room.Description.of_what_is_here()
-if dungeon_level > 0:
+if dungeon_level:
     if wandering_monster:
         print(room.Monster.wandering_monster_check(dungeon_level))
         sys.exit()
